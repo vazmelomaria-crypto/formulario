@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#111211" />
+    <title>Mileflix | Seu próximo play</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "DM Sans", sans-serif;
+        background: #111211;
+        color: #f4f2ec;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        --ink: #111211;
+        --paper: #f4f2ec;
+        --muted: #aaa9a2;
+        --line: #3b3d39;
+        --red: #ef4b36;
+        --lime: #c8f36b;
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; }
+      button, input { font: inherit; }
+      .page { min-height: 100vh; display: grid; grid-template-columns: minmax(360px, 0.88fr) minmax(560px, 1.12fr); }
+      .story { min-height: 100vh; position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 34px 5.2vw 32px; overflow: hidden; isolation: isolate; }
+      .story::before { content: ""; position: absolute; inset: 0; z-index: -2; background: url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1500&q=85") center / cover; }
+      .story::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(9, 10, 9, .45) 0%, rgba(9, 10, 9, .28) 40%, #111211 100%); }
+      .brand { display: inline-flex; align-items: center; gap: 10px; width: fit-content; color: var(--paper); text-decoration: none; font: 700 22px "Space Grotesk", sans-serif; letter-spacing: 0; }
+      .brand-mark { width: 30px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; color: var(--ink); background: var(--red); font-size: 15px; }
+      .story-copy { max-width: 510px; padding: 70px 0 45px; animation: arrive .7s ease-out both; }
+      .eyebrow { display: flex; align-items: center; gap: 9px; margin: 0 0 20px; color: var(--lime); font-size: 11px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; }
+      .eyebrow::before { content: ""; width: 23px; height: 1px; background: currentColor; }
+      h1 { max-width: 500px; margin: 0; font: 500 clamp(48px, 6.3vw, 82px)/.98 "Space Grotesk", sans-serif; letter-spacing: 0; }
+      h1 span { color: var(--red); }
+      .story-copy > p:last-child { max-width: 350px; margin: 24px 0 0; color: #d0cec6; font-size: 15px; line-height: 1.7; }
+      .story-foot { display: flex; align-items: center; gap: 12px; color: #d0cec6; font-size: 12px; }
+      .status-dot { width: 7px; aspect-ratio: 1; border-radius: 50%; background: var(--lime); box-shadow: 0 0 12px #c8f36b88; }
+      .form-panel { padding: 34px clamp(28px, 6vw, 88px) 40px; background: #171917; display: flex; align-items: center; }
+      .form-inner { width: 100%; max-width: 600px; margin: 0 auto; animation: arrive .7s .1s ease-out both; }
+      .mobile-brand { display: none; }
+      .form-heading { margin-bottom: 31px; }
+      .form-heading p { margin: 0 0 9px; color: var(--red); font-size: 11px; font-weight: 700; letter-spacing: 1.7px; text-transform: uppercase; }
+      h2 { margin: 0; font: 600 32px/1.15 "Space Grotesk", sans-serif; letter-spacing: 0; }
+      .form-heading .subheading { margin: 9px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+      .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 16px; }
+      .field { display: flex; flex-direction: column; gap: 8px; }
+      .field.wide { grid-column: 1 / -1; }
+      label, legend { color: #e8e6de; font-size: 12px; font-weight: 600; }
+      input[type="text"], input[type="email"], input[type="tel"] { width: 100%; height: 45px; padding: 0 13px; border: 1px solid #474943; border-radius: 3px; outline: none; color: var(--paper); background: #20221f; transition: border-color .18s ease, box-shadow .18s ease; }
+      input::placeholder { color: #85867f; }
+      input:focus-visible { border-color: var(--lime); box-shadow: 0 0 0 3px #c8f36b22; }
+      fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+      legend { margin-bottom: 11px; }
+      .genre-list { display: flex; flex-wrap: wrap; gap: 8px; }
+      .genre { position: relative; }
+      .genre input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+      .genre span { display: block; padding: 8px 11px; border: 1px solid #474943; border-radius: 2px; color: #c9c8c1; cursor: pointer; font-size: 12px; transition: color .16s ease, background .16s ease, border-color .16s ease; }
+      .genre input:checked + span { border-color: var(--lime); color: var(--ink); background: var(--lime); }
+      .genre input:focus-visible + span { outline: 2px solid var(--paper); outline-offset: 2px; }
+      .other-preference[hidden] { display: none; }
+      .section-rule { grid-column: 1 / -1; height: 1px; margin: 1px 0 -1px; background: var(--line); }
+      .submit-row { display: flex; align-items: center; gap: 18px; margin-top: 25px; }
+      .submit-button { min-height: 48px; padding: 0 21px; display: inline-flex; align-items: center; justify-content: center; gap: 24px; border: 0; border-radius: 2px; color: #151613; background: var(--lime); cursor: pointer; font-weight: 700; transition: background .18s ease, transform .18s ease; }
+      .submit-button:hover { background: #d6ff80; transform: translateY(-1px); }
+      .submit-button:focus-visible { outline: 2px solid var(--paper); outline-offset: 3px; }
+      .submit-button svg { width: 16px; height: 16px; }
+      .privacy { max-width: 210px; margin: 0; color: #969790; font-size: 11px; line-height: 1.5; }
+      .form-message { min-height: 20px; margin: 14px 0 0; color: var(--lime); font-size: 13px; }
+      @keyframes arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+      @media (max-width: 900px) {
+        .page { grid-template-columns: minmax(270px, .8fr) minmax(490px, 1.2fr); }
+        .story { padding-right: 30px; padding-left: 30px; }
+        .form-panel { padding-right: 34px; padding-left: 34px; }
+      }
+      @media (max-width: 700px) {
+        .page { display: block; }
+        .story { min-height: 310px; padding: 23px 24px 24px; }
+        .story::after { background: linear-gradient(180deg, rgba(9, 10, 9, .45), rgba(9, 10, 9, .46) 35%, #111211 100%); }
+        .story-copy { padding: 46px 0 18px; }
+        .story-copy h1 { max-width: 440px; font-size: clamp(44px, 11vw, 64px); }
+        .story-copy > p:last-child { max-width: 310px; margin-top: 14px; font-size: 13px; }
+        .story-foot { display: none; }
+        .form-panel { padding: 25px 24px 35px; align-items: flex-start; }
+        .form-heading { margin-bottom: 25px; }
+        h2 { font-size: 28px; }
+      }
+      @media (max-width: 430px) {
+        .fields { grid-template-columns: 1fr; gap: 16px; }
+        .field.wide, .section-rule { grid-column: auto; }
+        .submit-row { align-items: flex-start; flex-direction: column; gap: 11px; }
+        .privacy { max-width: 280px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="story" aria-labelledby="main-title">
+        <a class="brand" href="#inicio" aria-label="Mileflix, início"><span class="brand-mark" aria-hidden="true">M</span>mileflix</a>
+        <div class="story-copy" id="inicio">
+          <p class="eyebrow">Uma sessão feita pra você</p>
+          <h1 id="main-title">Seu próximo play começa <span>aqui.</span></h1>
+          <p>Conte o que você curte. A gente prepara uma seleção de filmes e séries com a sua cara.</p>
+        </div>
+        <div class="story-foot"><span class="status-dot" aria-hidden="true"></span> Histórias novas esperam por você.</div>
+      </section>
+
+      <section class="form-panel" aria-labelledby="form-title">
+        <div class="form-inner">
+          <a class="brand mobile-brand" href="#inicio"><span class="brand-mark" aria-hidden="true">M</span>mileflix</a>
+          <header class="form-heading">
+            <p>Seu perfil, seu catálogo</p>
+            <h2 id="form-title">Vamos montar sua lista?</h2>
+            <p class="subheading">Preencha seus dados e escolha seus gêneros favoritos.</p>
+          </header>
+          <form id="profile-form">
+            <div class="fields">
+              <div class="field wide">
+                <label for="name">Nome</label>
+                <input id="name" name="name" type="text" autocomplete="name" placeholder="Como podemos te chamar?" required />
+              </div>
+              <div class="field">
+                <label for="email">E-mail</label>
+                <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required />
+              </div>
+              <div class="field">
+                <label for="phone">Número de celular</label>
+                <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(11) 99999-9999" required />
+              </div>
+              <div class="section-rule" aria-hidden="true"></div>
+              <fieldset class="field wide">
+                <legend>O que você curte em filmes?</legend>
+                <div class="genre-list">
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Ação" /><span>Ação</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Aventura" /><span>Aventura</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Biografia" /><span>Biografia</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Comédia" /><span>Comédia</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Crime" /><span>Crime</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Documentário" /><span>Documentário</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Drama" /><span>Drama</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Esporte" /><span>Esporte</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Família" /><span>Família</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Fantasia" /><span>Fantasia</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Faroeste" /><span>Faroeste</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Ficção científica" /><span>Ficção científica</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Guerra" /><span>Guerra</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Histórico" /><span>Histórico</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Animação" /><span>Animação</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Mistério" /><span>Mistério</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Musical" /><span>Musical</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Policial" /><span>Policial</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Romance" /><span>Romance</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Suspense" /><span>Suspense</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Terror" /><span>Terror</span></label>
+                  <label class="genre"><input type="checkbox" name="filmGenres" value="Outros" data-other-toggle="film-other-field" aria-controls="film-other-field" /><span>Outros</span></label>
+                </div>
+                <div class="field other-preference" id="film-other-field" hidden>
+                  <label for="film-other">Qual outro gênero de filme?</label>
+                  <input id="film-other" name="filmOther" type="text" placeholder="Digite sua preferência" disabled />
+                </div>
+              </fieldset>
+              <fieldset class="field wide">
+                <legend>E em séries?</legend>
+                <div class="genre-list">
+                  <label class="genre"><input type="checkbox" name="seriesGenres" value="Crime" /><span>Crime</span></label>
+                  <label class="genre"><input type="checkbox" name="seriesGenres" value="Fantasia" /><span>Fantasia</span></label>
+                  <label class="genre"><input type="checkbox" name="seriesGenres" value="Documentário" /><span>Documentário</span></label>
+                  <label class="genre"><input type="checkbox" name="seriesGenres" value="Comédia" /><span>Comédia</span></label>
+                  <label class="genre"><input type="checkbox" name="seriesGenres" value="Drama" /><span>Drama</span></label>
+                  <label class="genre"><input type="checkbox" name="seriesGenres" value="Mistério" /><span>Mistério</span></label>
+                  <label class="genre"><input type="checkbox" name="seriesGenres" value="Reality" /><span>Reality</span></label>
+                  <label class="genre"><input type="checkbox" name="seriesGenres" value="Outros" data-other-toggle="series-other-field" aria-controls="series-other-field" /><span>Outros</span></label>
+                </div>
+                <div class="field other-preference" id="series-other-field" hidden>
+                  <label for="series-other">Qual outro gênero de série?</label>
+                  <input id="series-other" name="seriesOther" type="text" placeholder="Digite sua preferência" disabled />
+                </div>
+              </fieldset>
+            </div>
+            <div class="submit-row">
+              <button class="submit-button" type="submit">Criar meu perfil <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
+              <p class="privacy">Seus dados ficam com a Mileflix e ajudam a personalizar sua experiência.</p>
+            </div>
+            <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+    <script>
+      const profileForm = document.querySelector("#profile-form");
+      const formMessage = document.querySelector("#form-message");
+
+      document.querySelectorAll("[data-other-toggle]").forEach((toggle) => {
+        const field = document.getElementById(toggle.dataset.otherToggle);
+        const input = field.querySelector("input");
+        const updateField = () => {
+          field.hidden = !toggle.checked;
+          input.disabled = !toggle.checked;
+          input.required = toggle.checked;
+        };
+
+        toggle.addEventListener("change", updateField);
+        updateField();
+      });
+
+      profileForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const name = new FormData(profileForm).get("name").trim();
+        formMessage.textContent = `Perfil pronto, ${name}! Suas preferências foram registradas.`;
+        profileForm.querySelector("button[type='submit']").textContent = "Perfil criado";
+      });
+    </script>
+  </body>
+</html>

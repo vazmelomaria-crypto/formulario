@@ -61,6 +61,7 @@
       .genre { position: relative; }
       .genre input { position: absolute; width: 1px; height: 1px; opacity: 0; }
       .genre span { display: block; padding: 8px 11px; border: 1px solid #474943; border-radius: 2px; color: #c9c8c1; cursor: pointer; font-size: 12px; transition: color .16s ease, background .16s ease, border-color .16s ease; }
+      .genre input:disabled + span { cursor: not-allowed; opacity: .45; }
       .genre input:checked + span { border-color: var(--lime); color: var(--ink); background: var(--lime); }
       .genre input:focus-visible + span { outline: 2px solid var(--paper); outline-offset: 2px; }
       .other-preference[hidden] { display: none; }
@@ -138,7 +139,7 @@
               </div>
               <div class="section-rule" aria-hidden="true"></div>
               <fieldset class="field wide">
-                <legend>O que você curte em filmes?</legend>
+                <legend>O que você curte em filmes? (até 5)</legend>
                 <div class="genre-list">
                   <label class="genre"><input type="checkbox" name="filmGenres" value="Ação" /><span>Ação</span></label>
                   <label class="genre"><input type="checkbox" name="filmGenres" value="Aventura" /><span>Aventura</span></label>
@@ -169,7 +170,7 @@
                 </div>
               </fieldset>
               <fieldset class="field wide">
-                <legend>E em séries?</legend>
+                <legend>E em séries? (até 5)</legend>
                 <div class="genre-list">
                   <label class="genre"><input type="checkbox" name="seriesGenres" value="Crime" /><span>Crime</span></label>
                   <label class="genre"><input type="checkbox" name="seriesGenres" value="Fantasia" /><span>Fantasia</span></label>
@@ -198,6 +199,19 @@
     <script>
       const profileForm = document.querySelector("#profile-form");
       const formMessage = document.querySelector("#form-message");
+
+      document.querySelectorAll(".genre-list").forEach((genreList) => {
+        const genres = genreList.querySelectorAll("input[type='checkbox']");
+        const updateGenreLimit = () => {
+          const selectedCount = [...genres].filter((genre) => genre.checked).length;
+          genres.forEach((genre) => {
+            genre.disabled = selectedCount >= 5 && !genre.checked;
+          });
+        };
+
+        genreList.addEventListener("change", updateGenreLimit);
+        updateGenreLimit();
+      });
 
       document.querySelectorAll("[data-other-toggle]").forEach((toggle) => {
         const field = document.getElementById(toggle.dataset.otherToggle);
